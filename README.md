@@ -25,7 +25,7 @@ QMD Recall treats memory as retrieval, not reasoning. QMD already ranks the wiki
 On eligible turns, QMD Recall:
 
 1. checks a deterministic trigger classifier
-2. runs `qmd search` directly with a hard timeout
+2. calls the QMD HTTP API with a hard timeout
 3. filters by score and top-k
 4. injects a compact hidden context block with citations
 5. logs status without logging private snippets by default
@@ -70,7 +70,7 @@ Then add the plugin to your OpenClaw config. Do not paste this blindly into prod
           "maxSnippetChars": 420,
           "maxInjectedChars": 1600,
           "collections": ["vault"],
-          "qmdCommand": "qmd",
+          "qmdUrl": "http://localhost:8181/query",
           "logSnippets": false
         }
       }
@@ -108,7 +108,7 @@ Clone it to ~/projects/qmd-recall, run npm install and npm run build, then propo
 | `queryMode` | `message` | `message` or `message-and-recent`. |
 | `searchMode` | `search` | QMD command to run: `search`, `query`, or `vsearch`. `search` is the fast default. |
 | `collections` | `["vault"]` | QMD collections to search. Run `qmd collection list` to see yours. |
-| `qmdCommand` | `qmd` | QMD binary path. |
+| `qmdUrl` | `http://localhost:8181/query` | QMD HTTP query endpoint. Start it with `qmd mcp --http`. |
 | `logSnippets` | `false` | Reserved for debug builds. Keep false in real use. |
 | `triggers.include` | see config | Terms that force recall. |
 | `triggers.exclude` | see config | Exact short messages that skip recall. |
@@ -155,13 +155,14 @@ The pure retrieval logic lives in `src/core.ts`. The QMD process adapter lives i
 
 This plugin targets OpenClaw's `before_prompt_build` hook and returns `{ prependContext }`, matching the observed active-memory plugin behavior in OpenClaw 2026.4.24.
 
-QMD CLI arguments are currently assumed as:
+QMD Recall expects the QMD HTTP endpoint:
 
 ```bash
-qmd search "<query>" --json -n 3 -c vault
+qmd mcp --http
+curl -X POST http://localhost:8181/query -H "Content-Type: application/json" -d '{"searches":[{"type":"lex","query":"test memory"}],"collections":["vault"],"limit":3}'
 ```
 
-If your QMD install uses different flags, change `buildQmdArgs()` in `src/qmd.ts` or set up a wrapper script and point `qmdCommand` at it.
+If your QMD install uses a different host or port, set `qmdUrl`.
 
 ## Troubleshooting
 
@@ -177,10 +178,10 @@ If your QMD install uses different flags, change `buildQmdArgs()` in `src/qmd.ts
 Run this manually:
 
 ```bash
-qmd search "test memory" --json -n 3 -c vault
+curl -X POST http://localhost:8181/query -H "Content-Type: application/json" -d '{"searches":[{"type":"lex","query":"test memory"}],"collections":["vault"],"limit":3}'
 ```
 
-If that fails, fix QMD or set `qmdCommand` to a wrapper script.
+If that fails, start QMD with `qmd mcp --http` or update `qmdUrl` to the correct endpoint.
 
 ### It feels slow
 
@@ -198,17 +199,14 @@ Lower `timeoutMs`. Recommended range is 800 to 1500ms. This plugin should never 
 
 MIT
 
-## Security note: why this plugin spawns a process
+## Security note: QMD endpoint boundary
 
-QMD Recall calls the local `qmd` binary with `child_process.spawn`. That is intentional: QMD is the retrieval engine, and the plugin is only a bounded adapter around it.
+QMD Recall does not execute shell commands. It calls a configured QMD HTTP endpoint and applies a hard timeout.
 
 Risk controls:
 
-- `qmdCommand` is explicit and configurable.
-- Arguments are passed as an argv array, not shell-concatenated strings.
-- The process has a hard timeout.
+- `qmdUrl` is explicit and configurable.
 - Failures inject nothing.
 - Snippets are not logged by default.
 - Shared channels are disabled by default.
-
-OpenClaw may flag this during install as dangerous code. Review the command path, pin it to your trusted QMD binary, then install with the explicit unsafe override only if you accept that local-process boundary.
+- The QMD daemon stays under the user's control.

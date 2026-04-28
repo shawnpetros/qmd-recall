@@ -11,7 +11,7 @@ export type QmdRecallConfig = {
   queryMode: "message" | "message-and-recent";
   searchMode: "search" | "query" | "vsearch";
   collections: string[];
-  qmdCommand: string;
+  qmdUrl: string;
   logSnippets: boolean;
   triggers: {
     minChars: number;
@@ -31,7 +31,7 @@ export const DEFAULT_CONFIG: QmdRecallConfig = {
   queryMode: "message",
   searchMode: "search",
   collections: ["vault"],
-  qmdCommand: "qmd",
+  qmdUrl: "http://localhost:8181/query",
   logSnippets: false,
   triggers: {
     minChars: 24,
@@ -77,7 +77,7 @@ export function mergeConfig(raw: unknown): QmdRecallConfig {
     allowedChatTypes: arrayOfStrings(input.allowedChatTypes, DEFAULT_CONFIG.allowedChatTypes),
     searchMode: input.searchMode === "query" || input.searchMode === "vsearch" ? input.searchMode : DEFAULT_CONFIG.searchMode,
     collections: arrayOfStrings(input.collections, DEFAULT_CONFIG.collections),
-    qmdCommand: typeof input.qmdCommand === "string" && input.qmdCommand.trim() ? input.qmdCommand : DEFAULT_CONFIG.qmdCommand,
+    qmdUrl: typeof input.qmdUrl === "string" && input.qmdUrl.trim() ? input.qmdUrl : DEFAULT_CONFIG.qmdUrl,
     triggers: {
       ...DEFAULT_CONFIG.triggers,
       ...triggers,

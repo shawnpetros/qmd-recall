@@ -70,9 +70,6 @@
           "type": "string"
         }
       },
-      "qmdCommand": {
-        "type": "string"
-      },
       "logSnippets": {
         "type": "boolean"
       },
@@ -97,12 +94,15 @@
             }
           }
         }
+      },
+      "qmdUrl": {
+        "type": "string"
       }
     }
   },
-  "security-notes": "Runs a configured QMD command with child_process.spawn and a hard timeout. Installers should review qmdCommand and collections before enabling.",
+  "security-notes": "Calls a configured QMD HTTP endpoint with fetch and a hard timeout. No shell execution. Review qmdUrl and collections before enabling.",
   "privacy-notes": "Injects private snippets into hidden prompt context only. Does not log snippets unless logSnippets is explicitly true. Defaults to direct-message-only.",
-  "attack-surface-reduction": "Fail-closed retrieval path, no embedded LLM subagent, no network calls except whatever the configured qmd binary performs.",
+  "attack-surface-reduction": "Fail-closed retrieval path, no embedded LLM subagent, no shell execution, and no snippet logging by default.",
   "activation": {
     "onStartup": true
   }

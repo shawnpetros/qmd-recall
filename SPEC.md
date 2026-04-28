@@ -63,7 +63,7 @@ Shared channels must opt in explicitly.
   "queryMode": "message",
   "searchMode": "search",
   "collections": ["vault"],
-  "qmdCommand": "qmd",
+  "qmdUrl": "http://localhost:8181/query",
   "logSnippets": false,
   "triggers": {
     "minChars": 24,
