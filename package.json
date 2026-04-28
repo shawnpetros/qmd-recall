@@ -1,0 +1,44 @@
+{
+  "name": "qmd-recall",
+  "version": "0.1.0",
+  "description": "Deterministic QMD memory recall for OpenClaw, no embedded agent, no pre-answer lag.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "openclaw": {
+    "extensions": ["./dist/index.js"]
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "SPEC.md",
+    "openclaw.plugin.json",
+    "openclaw.json",
+    "assets",
+    "docs",
+    "examples"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test dist/__tests__/*.test.js",
+    "check": "npm run build && npm test",
+    "doctor": "node dist/doctor.js",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "qmd",
+    "memory",
+    "retrieval",
+    "semantic-search"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

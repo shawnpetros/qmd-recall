@@ -1,0 +1,39 @@
+{
+  "id": "qmd-recall",
+  "name": "QMD Recall",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "entry": "dist/index.js",
+  "description": "Deterministic before-prompt QMD retrieval for OpenClaw. No embedded LLM subagent, hard timeout, fail closed.",
+  "hooks": ["before_prompt_build"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "agents": { "type": "array", "items": { "type": "string" } },
+      "allowedChatTypes": { "type": "array", "items": { "type": "string", "enum": ["direct", "group", "channel", "unknown"] } },
+      "timeoutMs": { "type": "integer", "minimum": 1 },
+      "maxResults": { "type": "integer", "minimum": 1 },
+      "minScore": { "type": "number" },
+      "maxSnippetChars": { "type": "integer", "minimum": 1 },
+      "maxInjectedChars": { "type": "integer", "minimum": 1 },
+      "queryMode": { "type": "string", "enum": ["message", "message-and-recent"] },
+      "searchMode": { "type": "string", "enum": ["search", "query", "vsearch"] },
+      "collections": { "type": "array", "items": { "type": "string" } },
+      "qmdCommand": { "type": "string" },
+      "logSnippets": { "type": "boolean" },
+      "triggers": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "minChars": { "type": "integer", "minimum": 1 },
+          "include": { "type": "array", "items": { "type": "string" } },
+          "exclude": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "security-notes": "Runs a configured QMD command with child_process.spawn and a hard timeout. Installers should review qmdCommand and collections before enabling.",
+  "privacy-notes": "Injects private snippets into hidden prompt context only. Does not log snippets unless logSnippets is explicitly true. Defaults to direct-message-only.",
+  "attack-surface-reduction": "Fail-closed retrieval path, no embedded LLM subagent, no network calls except whatever the configured qmd binary performs."
+}

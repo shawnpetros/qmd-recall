@@ -1,0 +1,32 @@
+{
+  "plugins": {
+    "entries": {
+      "qmd-recall": {
+        "enabled": false,
+        "path": "./dist/index.js",
+        "config": {
+          "agents": ["main"],
+          "allowedChatTypes": ["direct"],
+          "timeoutMs": 1500,
+          "maxResults": 3,
+          "minScore": 0.5,
+          "maxSnippetChars": 420,
+          "maxInjectedChars": 1600,
+          "queryMode": "message",
+          "searchMode": "search",
+          "collections": ["vault"],
+          "qmdCommand": "qmd",
+          "logSnippets": false,
+          "triggers": {
+            "minChars": 24,
+            "include": [
+              "remember", "decid", "todo", "follow up", "deadline", "meeting", "calendar",
+              "inbox", "email", "prep", "who is", "what happened", "what did we say"
+            ],
+            "exclude": ["send it", "yes", "no", "ok", "lol", "thanks", "dope"]
+          }
+        }
+      }
+    }
+  }
+}
