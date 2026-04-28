@@ -1,6 +1,6 @@
 {
   "name": "qmd-recall",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Deterministic QMD memory recall for OpenClaw, no embedded agent, no pre-answer lag.",
   "type": "module",
   "main": "dist/index.js",
